@@ -23,4 +23,4 @@ def get_klines(pair, interval='1m', limit=100):
     ])
     df["close"] = df["close"].astype(float)
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit='ms')
-    return df[["timestamp", "close"]]
+    return df[["timestamp","close"]]
