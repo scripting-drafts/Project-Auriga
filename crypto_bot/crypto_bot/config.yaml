@@ -1,10 +1,10 @@
 # Configuración general del bot
 simulation: true
 initial_balance:
-  USDT: 10000
-  BTC: 1
-  ETH: 10
+  USDT: 50
+  BTC: 0.0000084
+  ETH: 0.0000084
 slippage_range: [0.0001, 0.001]  # 0.01% - 0.1%
 partial_fill_range: [0.7, 1.0]
 fee: 0.001  # 0.1%
-log_interval: 10  # segundos
+log_interval: 360  # segundos
