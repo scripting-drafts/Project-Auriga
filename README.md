@@ -1,4 +1,4 @@
-# Project Crypto Trading
+# Project Auriga
   
 ML Notes  
 
