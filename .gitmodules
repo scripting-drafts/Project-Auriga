@@ -1,0 +1,3 @@
+[submodule "Trading-Automation"]
+	path = Trading-Automation
+	url = https://github.com/scripting-drafts/Trading-Automation
