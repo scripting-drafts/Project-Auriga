@@ -16,7 +16,7 @@ jobs:
 
     - name: Set up SSH Key
       run: |
-        echo "${{ secrets.AWS_EC2_KEY }}" > key.pem
+        echo "${{ secrets.AWS_EC2_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
     - name: Copy project to EC2
@@ -27,7 +27,7 @@ jobs:
     - name: Run trading_automation.py on EC2
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
-          cd ~/trading_test
+          cd ~/Trading-Automation
           python3 -m pip install -r requirements.txt || true
           nohup python3 trading_automation.py > output.log 2>&1 &
           sleep 10
@@ -36,8 +36,8 @@ jobs:
 
     - name: Restart tradingbot service on EC2
       run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           sudo systemctl daemon-reload
           sudo systemctl restart tradingbot.service
           sudo systemctl status tradingbot.service --no-pager
-          EOF
+        EOF
