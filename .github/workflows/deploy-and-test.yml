@@ -24,6 +24,14 @@ jobs:
         scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
         ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/Trading-Automation
 
+    - name: Restart tradingbot service on EC2
+      run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+          sudo systemctl daemon-reload
+          sudo systemctl restart tradingbot.service
+          sudo systemctl status tradingbot.service --no-pager
+          EOF
+
     - name: Run trading_automation.py on EC2
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
@@ -33,11 +41,3 @@ jobs:
           sleep 10
           tail -n 20 output.log
         EOF
-
-    - name: Restart tradingbot service on EC2
-      run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
-          sudo systemctl daemon-reload
-          sudo systemctl restart tradingbot.service
-          sudo systemctl status tradingbot.service --no-pager
-          EOF
