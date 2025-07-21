@@ -21,8 +21,8 @@ jobs:
 
     - name: Copy project to EC2
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem -r "Misc/Trading Automation" \
-        ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/trading_test
+        scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
+        ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/Trading-Automation
 
     - name: Run trading_automation.py on EC2
       run: |
