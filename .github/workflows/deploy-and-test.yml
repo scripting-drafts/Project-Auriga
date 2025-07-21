@@ -41,3 +41,4 @@ jobs:
           sudo systemctl restart tradingbot.service
           sudo systemctl status tradingbot.service --no-pager
         EOF
+        
