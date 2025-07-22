@@ -11,8 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout including submodules
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
     - name: Set up SSH Key from base64
       run: |
