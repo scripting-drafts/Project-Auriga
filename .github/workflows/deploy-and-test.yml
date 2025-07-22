@@ -21,8 +21,9 @@ jobs:
 
     - name: Deploy Service
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem trading.service ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:/etc/systemd/system/
+        scp -o StrictHostKeyChecking=no -i key.pem trading.service ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+          sudo mv ~/trading.service /etc/systemd/system/
           sudo systemctl daemon-reload
           sudo systemctl enable tradingbot.service
         EOF
