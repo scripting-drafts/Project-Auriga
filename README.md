@@ -1,5 +1,14 @@
 # Project Auriga
   
+
+### CI/CD TODOs
+  
+ - Deploy service
+ - Check the scp
+
+
+
+
 ML Notes  
 
 | Model    | Purpose                                            |
