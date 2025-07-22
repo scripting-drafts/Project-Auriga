@@ -26,7 +26,7 @@ jobs:
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
         ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/Trading-Automation
-
+ 
     - name: Run trading_automation.py on EC2
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
