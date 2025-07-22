@@ -19,13 +19,18 @@ jobs:
         printf "%s" "${{ secrets.AWS_EC2_KEY_B64 }}" | base64 -d > key.pem
         chmod 600 key.pem
 
-    - name: Debug SSH connection
+    - name: Deploy Service
       run: |
-        ssh -vvv -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} echo "SSH OK"
+        scp -o StrictHostKeyChecking=no -i key.pem trading.service ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:/etc/systemd/system/
+        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+          sudo systemctl daemon-reload
+          sudo systemctl enable tradingbot.service
+        EOF
+
     - name: Copy project to EC2
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
-        ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/Trading-Automation
+        scp -o StrictHostKeyChecking=no -i key.pem -r "../../Trading-Automation" \
+        ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
  
     - name: Run trading_automation.py on EC2
       run: |
@@ -37,11 +42,11 @@ jobs:
           tail -n 20 output.log
         EOF
 
-    - name: Restart tradingbot service on EC2
+    - name: Restart trading service on EC2
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           sudo systemctl daemon-reload
-          sudo systemctl restart tradingbot.service
-          sudo systemctl status tradingbot.service --no-pager
+          sudo systemctl restart trading.service
+          sudo systemctl status trading.service --no-pager
         EOF
         
