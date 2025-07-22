@@ -14,11 +14,14 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Set up SSH Key
+    - name: Set up SSH Key from base64
       run: |
-        echo "${{ secrets.AWS_EC2_KEY }}" | tr -d '\r' > key.pem
+        printf "%s" "${{ secrets.AWS_EC2_KEY_B64 }}" | base64 -d > key.pem
         chmod 600 key.pem
 
+    - name: Debug SSH connection
+      run: |
+        ssh -vvv -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} echo "SSH OK"
     - name: Copy project to EC2
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
