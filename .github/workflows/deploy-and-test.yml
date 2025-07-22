@@ -25,6 +25,11 @@ jobs:
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
         ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
+        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+          cd Trading-Automation
+          sudo apt install python3-pip
+          pip install -r requirements.txt
+        EOF
  
     - name: Deploy Service
       run: |
