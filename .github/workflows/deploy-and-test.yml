@@ -52,7 +52,7 @@ jobs:
             sudo updatedb
             wget -O get-pip.py https://bootstrap.pypa.io/get-pip.py 
             sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.old &>/dev/null
-            python get-pip.py
+            python3 get-pip.py
             touch ~/.auriga_env_configured
             echo "✔️ Environment configured."
           else
