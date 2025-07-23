@@ -1,0 +1,13 @@
+[Unit]
+Description=Symbol Updater
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/Trading-Automation
+ExecStart=/usr/bin/python3 update_symbols.py
+Restart=on-failure
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
