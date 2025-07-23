@@ -27,6 +27,15 @@ jobs:
       with:
         python-version: '3.12'
 
+    - name: Deploy Project
+      run: |
+        scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
+        ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
+        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+          sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.old
+          cd Trading-Automation
+          pip install -r requirements.txt
+        EOF
     - name: Deploy EC2 Environment
       run: |
         ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
@@ -34,7 +43,6 @@ jobs:
             echo "alias python=/usr/bin/python3.12" >> ~/.profile
             echo "alias pip=/home/ubuntu/.local/bin/pip" >> ~/.profile
             source .profile
-            sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.old
             wget -O get-pip.py https://bootstrap.pypa.io/get-pip.py 
             python get-pip.py
             touch ~/.auriga_env_configured
@@ -42,17 +50,6 @@ jobs:
           else
             echo "ℹ️ Environment already configured. Skipping alias setup."
           fi
-        EOF
-
-    - name: Deploy Project
-      run: |
-        scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
-        ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
-          
-          
-          cd Trading-Automation
-          pip install -r requirements.txt
         EOF
  
     - name: Deploy Service
