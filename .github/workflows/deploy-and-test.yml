@@ -22,7 +22,12 @@ jobs:
         printf "%s" "${{ secrets.AWS_EC2_KEY_B64 }}" | base64 -d > key.pem
         chmod 600 key.pem
 
-    - name: Deploy Environment
+    - name: load python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Deploy EC2 Environment
       run: |
         ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           if [ ! -f ~/.auriga_env_configured ]; then
@@ -39,7 +44,7 @@ jobs:
           fi
         EOF
 
-    - name: Copy project to EC2
+    - name: Deploy Project
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
         ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
@@ -59,6 +64,11 @@ jobs:
           sudo systemctl enable trading.service
         EOF
     - name: Run trading_automation.py on EC2
+      env:
+        BINANCE_KEY: ${{ secrets.BINANCE_KEY }}
+        BINANCE_SECRET: ${{ secrets.BINANCE_SECRET }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           cd ~/Trading-Automation
