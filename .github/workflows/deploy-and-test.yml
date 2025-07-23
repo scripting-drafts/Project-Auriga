@@ -70,7 +70,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           cd ~/Trading-Automation
           python3 -m pip install -r requirements.txt || true
-          nohup python trading_automation.py > output.log 2>&1 &
+          nohup python3 trading_automation.py > output.log 2>&1 &
           sleep 10
           tail -n 20 output.log
         EOF

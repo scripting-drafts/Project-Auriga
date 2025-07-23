@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/ubuntu/Trading-Automation
-ExecStart=/usr/bin/python3.12 /home/ubuntu/Trading-Automation/trading_automation.py
+ExecStart=/usr/bin/python3 /home/ubuntu/Trading-Automation/trading_automation.py
 Restart=always
 RestartSec=5
 StandardOutput=append:/home/ubuntu/Trading-Automation/bot.log
