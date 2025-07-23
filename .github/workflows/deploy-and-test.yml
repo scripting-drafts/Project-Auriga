@@ -49,7 +49,7 @@ jobs:
         
         ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} \
         "echo '.env' >> ~/Trading-Automation/.gitignore || true"
-
+ 
     - name: Deploy EC2 Environment
       run: |
         ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
