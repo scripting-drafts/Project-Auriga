@@ -75,7 +75,9 @@ jobs:
           sudo mv ~/trading.service /etc/systemd/system/
           sudo mv ~/symbols_update.service /etc/systemd/system/
           sudo systemctl daemon-reload
-          sudo systemctl enable trading.service symbols_update.service
+          sudo systemctl enable symbols_update.service
+          sudo systemctl start symbols_update.service
+          sudo systemctl enable trading.service
         EOF
     - name: Restart Trading Service
       run: |
