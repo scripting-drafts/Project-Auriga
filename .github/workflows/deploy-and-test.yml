@@ -47,9 +47,12 @@ jobs:
             echo "alias python=/usr/bin/python3.12" >> ~/.profile
             echo "alias pip=/home/ubuntu/.local/bin/pip" >> ~/.profile
             source .profile
+            sudo apt update && sudo apt upgrade
+            sudo apt install locate
+            sudo updatedb
             wget -O get-pip.py https://bootstrap.pypa.io/get-pip.py 
             sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.old &>/dev/null
-            python3 get-pip.py
+            python get-pip.py
             touch ~/.auriga_env_configured
             echo "✔️ Environment configured."
           else
