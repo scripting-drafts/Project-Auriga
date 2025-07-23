@@ -81,7 +81,8 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           sudo systemctl daemon-reload
-          sudo systemctl restart symbols_update.service trading.service
+          sudo systemctl restart symbols_update.service
+          sudo systemctl restart trading.service
           sudo systemctl status trading.service --no-pager
         EOF
         
