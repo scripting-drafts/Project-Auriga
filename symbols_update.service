@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/home/ubuntu/Trading-Automation
-ExecStart=/usr/bin/python3 update_symbols.py
+ExecStart=/usr/bin/python3 /home/ubuntu/Trading-Automation/update_symbols.py
 Restart=on-failure
 User=ubuntu
 

@@ -75,15 +75,13 @@ jobs:
           sudo mv ~/trading.service /etc/systemd/system/
           sudo mv ~/symbols_update.service /etc/systemd/system/
           sudo systemctl daemon-reload
-          sudo systemctl enable symbols_update.service
-          sudo systemctl enable trading.service
+          sudo systemctl enable symbols_update.service trading.service
         EOF
     - name: Restart Trading Service
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
-          sudo systemctl start symbols_update.service
           sudo systemctl daemon-reload
-          sudo systemctl restart trading.service
+          sudo systemctl restart symbols_update.service trading.service
           sudo systemctl status trading.service --no-pager
         EOF
         

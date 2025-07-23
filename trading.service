@@ -1,7 +1,6 @@
 [Unit]
 Description=Trading Automation Bot
-After=symbols_update.service
-Requires=symbols_update.service
+After=network.target
 
 [Service]
 Type=simple
