@@ -1,4 +1,4 @@
-from binance_api import get_klines
+from binance_api import get_klines, fetch_full_history
 from indicators import calculate_ma, calculate_bollinger, calculate_rsi
 from logger import log_trade
 import random
@@ -7,7 +7,7 @@ class Trader:
     def __init__(self, config):
         self.config = config
         self.balances = config["initial_balance"].copy()
-        self.pairs = ["ETHUSDT", "BTCUSDT", "ETHBTC"]
+        self.pairs = self.config["pairs"]
         self.positions = {
             pair: {"shorts": [], "longs": []} for pair in self.pairs
         }
@@ -110,9 +110,30 @@ class Trader:
             return amount * 3500
         return 0
 
+    def other_process(self):
+        for pair in self.pairs:
+            # patched in gpu acc branch
+            # df = get_klines(pair, limit=100)
+            df = fetch_full_history(pair, interval=self.config.get("interval", "1m"))
+            if df.empty or len(df) < 35:
+                print(f"[{pair}] No se pudo obtener suficientes datos. Saltando.")
+                continue
+            df = calculate_ma(df, [7, 9, 21, 34])
+            df = calculate_bollinger(df, 20, 2)
+            df = calculate_rsi(df, 14)
+            current_price = df["close"].iloc[-1]
+
+            self.update_trailing_stops(pair, current_price)
+
+            if self.should_enter_short(df):
+                self.simulate_trade(current_price, pair, "short")
+            if self.should_enter_long(df):
+                self.simulate_trade(current_price, pair, "long")
+
     def process(self):
         for pair in self.pairs:
-            df = get_klines(pair, limit=100)
+            print(f"Fetching full historical data for {pair}...")
+            df = fetch_full_history(pair, interval=self.config.get("interval", "1m"))
             if df.empty or len(df) < 35:
                 print(f"[{pair}] No se pudo obtener suficientes datos. Saltando.")
                 continue
