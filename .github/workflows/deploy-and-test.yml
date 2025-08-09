@@ -59,43 +59,29 @@ jobs:
             echo "ℹ️ Environment already configured. Skipping alias setup."
           fi
         EOF
-
-    - name: Deploy Project
-      run: |
         scp -o StrictHostKeyChecking=no -i key.pem -r "Trading-Automation" \
         ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           sudo mv /usr/lib/python3.12/EXTERNALLY-MANAGED /usr/lib/python3.12/EXTERNALLY-MANAGED.old &>/dev/null
           cd Trading-Automation
-          pip install -r requirements.txt
+          python3 -m pip install -r requirements.txt || true
         EOF
-    - name: Deploy Service
+    - name: Deploy Trading Service
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem trading.service ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
+        scp -o StrictHostKeyChecking=no -i key.pem symbols_update.service ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:~/
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+          pkill python*
           sudo mv ~/trading.service /etc/systemd/system/
+          sudo mv ~/symbols_update.service /etc/systemd/system/
           sudo systemctl daemon-reload
-          sudo systemctl enable trading.service
+          sudo systemctl enable symbols_update.service trading.service
         EOF
-    - name: Run trading_automation.py on EC2
-      env:
-        BINANCE_KEY: ${{ secrets.BINANCE_KEY }}
-        BINANCE_SECRET: ${{ secrets.BINANCE_SECRET }}
-        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
-          cd ~/Trading-Automation
-          python3 -m pip install -r requirements.txt || true
-          nohup python3 trading_automation.py > output.log 2>&1 &
-          sleep 10
-          tail -n 20 output.log
-        EOF
-
-    - name: Restart trading service on EC2
+    - name: Restart Trading Service
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'EOF'
           sudo systemctl daemon-reload
+          sudo systemctl restart symbols_update.service
           sudo systemctl restart trading.service
           sudo systemctl status trading.service --no-pager
         EOF
